@@ -1,45 +1,51 @@
 //Bus Reservation System Source Code by
-//Anas Waseem, Hamza Raheel, Taaha Khan, Haider Chaudhry, Husnain Ahmed
-//ALL REC FUNCTIONS ARE UNDER CONSTRUCTION AND WILL BE COMPLETED SOON!!!
+//Anas Waseem, Muhammad Jawad Hussain and Muhammad Taha
+
+//Header Files End
+//and Function Declaration Starts
+
 #include <iostream>
 #include <conio.h>
 #include <iomanip>
 #include <stdio.h>
 #include <string>
 #include <fstream>
-using namespace std;  //Header Files End
-					  //and Function Declaration Starts
-void bookings();  // Refer T. Manual Page 2-3 for these 4 functions
+#include "Node.h"	//The File Where Node is defined
+#include "Structure.h"	//The File where structure is defined
+#include "Time.h"	//The File Where Reservation Time is Defined
+
+using namespace std;  
+void bookings(); 
 void records();
 void busesinfo();
 void mmenu();
-//LHE-ISB
-void lheisbres(); //For all the res functions, refer page 4-6
-				  //void lheisbrec(); Under Construction :(  For all the rec Functions, refer pages after 5 on T. Manual
-				  //LHE-FSD
-void lhefsdres();
-void lhefsdrec(); 
+//DONE
+void khiskrres();
+void khiskrrec();
+
+//PENDING
+void khihydres();
+void lhehydrec(); 
 //LHE-MUR
 void lhemurres(); //Refer T. Manual
 				  //void lhemurrec(); Under Construction
 				  //LHE-KHI
 void lhekhires(); //Refer T. Manual
 				  //void lhekhirec(); //Under Construction
-void lheisbrec();
 
-fstream log_isb;
-fstream log_fsd;
+fstream log_skr;
+fstream log_hyd;
 fstream log_mur;
 fstream log_khi;
+string resdby;		//Shows the Name at the End of the Bill
 //Structure for Reservation
-struct res { //Reservation Structure
-	int seat;
-	char fname[15];
-	char lname[15];
-	int dd, mm, yyyy;
-};
+
+
 
 int n = 0; //Wrong Pass Variable
+node *START = NULL;
+
+
 
 void main() {  //Its the Login Function, details on Technical Manual Page 1
 	system("cls");
@@ -55,16 +61,18 @@ beg: //Incase of wrong password
 	cout << "\nPassword:\t";
 	cin >> password;
 	n++;
-	if (username == "anas" && password == 5858)
+	if (username == "anas" && password == 5858) {
+		resdby = "Anas Waseem";
 		mmenu();
-	else if (username == "hamza"&& password == 6868)
+	}
+	else if (username == "jawad" && password == 6868) {
+		resdby = "Muhammad Jawad";
 		mmenu();
-	else if (username == "taha"&& password == 7878)
+	}
+	else if (username == "taha" && password == 7878) {
+		resdby = "Muhammad Taha";
 		mmenu();
-	else if (username == "husnain"&&password == 8888)
-		mmenu();
-	else if (username == "haider"&&password == 9898)
-		mmenu();
+	}
 	else {
 		if (n == 1) {
 			cout << "\nWrong Attempt 1, you have 2 Attempts remaining\n\n";
@@ -83,11 +91,11 @@ beg: //Incase of wrong password
 
 }
 
-void mmenu() //Refer Page 1 on T. Manual
+void mmenu()
 {
 	system("cls");
 	cout << "*********************************************************************************\n"
-		<< "*           WELCOME TO BS IT - 2 BUS RESERVATION SYSTEM MAIN MENU               *\n"
+		<< "*           WELCOME TO BS IT - 4 BUS RESERVATION SYSTEM MAIN MENU               *\n"
 		<< "**********************************************************************************";
 	cout << endl << endl;
 	cout << "Please Select your desired Operation:\n"
@@ -113,19 +121,19 @@ void mmenu() //Refer Page 1 on T. Manual
 
 void bookings() {
 	cout << "Welcome to Route Selection:\n\n"
-		<< "1. Lahore to Islamabad (Rs. 800/person)\n"
-		<< "2. Lahore to Faisalabad(Rs. 400/person)\n"
-		<< "3. Lahore to Murree (Rs.1600/person)\n"
-		<< "4. Lahore to Karachi (Rs.3000/person)\n"
+		<< "1. Karachi to Sukkur (Rs. 800/person)\n"
+		<< "2. Karachi to Hyderabad (Rs. 400/person)\n"
+		<< "3. Karachi to Gawadar (Rs. 1600/person)\n"
+		<< "4. Karachi to Lahore (Rs. 3000/person)\n"
 		<< "5. Return to Main Menu\n\n"
 		<< "Enter Choice: ";
 	int option;
 	cin >> option;
 
 	if (option == 1)
-		lheisbres();
+		khiskrres();
 	else if (option == 2)
-		lhefsdres();
+		khihydres();
 	else if (option == 3)
 		lhemurres();
 	else if (option == 4)
@@ -138,17 +146,17 @@ void bookings() {
 
 void records() {
 	cout << "Bookings Information Menu, Please Select your route:\n\n"
-		<< "1. Lahore to Islamabad (Rs. 800/person)\n"
-		<< "2. Lahore to Faisalabad(Rs. 400/person)\n"
-		<< "3. Lahore to Murree(Rs. 1600/person)\n"
-		<< "4. Lahore to Karachi(Rs. 3000/person)\n"
+		<< "1. Karachi to Sukkur (Rs. 800/person)\n"
+		<< "2. Karachi to Hyderabad (Rs. 400/person)\n"
+		<< "3. Karachi to Gawadar (Rs. 1600/person)\n"
+		<< "4. Karachi to Lahore (Rs. 3000/person)\n"
 		<< "5. Return to Main Menu\n\n"
 		<< "Enter Choice: ";
 	int option;
 	cin >> option;
 
-	if (option == 1)  //Under Construction all rec functions
-		lheisbrec();
+	if (option == 1)
+		khiskrrec();
 	else if (option == 2)
 		cout << "Under Consrtruction";
 	else if (option == 3)
@@ -170,30 +178,54 @@ void busesinfo() {
 		<< "***********************************************\n"
 		<< "SNo.        Route                       Timings\n"
 		<< "***********************************************\n\n"
-		<< "BUS-001     Lahore to Islamabad          08:00 \n"
-		<< "BUS-002     Lahore to Faisalabad         10:30 \n"
-		<< "BUS-003     Lahore to Murree             23:00 \n"
-		<< "BUS-004     Lahore to Karachi            19:45 \n"
-		<< "\nWe have 1 Bus for each route once in a day! Copyrights (c) 2015 - BS IT_2";
+		<< "BUS-001     Karachi to Sukkur              08:00 \n"
+		<< "BUS-002     Karachi to Hyderabad           10:30 \n"
+		<< "BUS-003     Karachi to Gawadar             23:00 \n"
+		<< "BUS-004     Karachi to Lahore              19:45 \n"
+		<< "\nWe have 1 Bus for each route once in a day! Copyrights (c) 2016 - BS IT_4";
 	cout << "Press Any key to Continue.....";
 	system("pause"); mmenu();
 }
-//*****************ALL REC FUNCTIONS ARE DEFINED ON TECHNICAL MANUAL************************************************************
-void lheisbres() {
-	system("cls");
-	cout << "Welcome to the Reservation System for Lahore - Islamabad Route\n\n";
 
-	fstream isb;
+void insert(int dd, int mm, int yyyy, int seat) {
+	node *temp, *t;
+
+	temp = createNode();
+	(*temp).dd = dd;
+	(*temp).mm = mm;
+	(*temp).yyyy = yyyy;
+	(*temp).seat = seat;
+	(*temp).next = NULL;
+
+	if (START == NULL) {
+		START = temp;
+	}
+
+	else {
+		t = START;
+
+		while ((*t).next != NULL) {
+			(t) = (*t).next;
+		}
+		(*t).next = temp;
+	}
+}
+
+void khiskrres() {
+	system("cls");
+	cout << "Welcome to the Reservation System for Karachi - Sukkur Route\n\n";
+
+	fstream skr;
 	int i = 1;
 	cout << "How many Seats you want to reserve (Max 10 at a time)?: ";
 	cin >> i;
 	res r[10];
-	remove("lhe-isb.dat");
-	isb.close();
+	remove("khi-skr.dat");
+	skr.close();
 	cout << "\nEnter the following information to complete the booking:\n\n";
 	for (int b = 1; b <= i; b++) {
-		isb.open("lhe-isb.dat", ios::app);
-		log_isb.open("lhe-isb-log.dat", ios::app);
+		skr.open("khi-skr.dat", ios::app);
+		log_skr.open("khi-skr-log.dat", ios::app);
 		cout << "Please Enter Departure Date (DD MM YYYY): ";
 		cin >> r[i].dd >> r[i].mm >> r[i].yyyy;
 		if (r[i].dd > 31 || r[i].mm > 12) {
@@ -210,10 +242,10 @@ void lheisbres() {
 		}
 		cout << "Passenger's Name: ";
 		cin >> r[i].fname >> r[i].lname;
-		isb << r[i].seat << setw(25) << r[i].fname << " " << r[i].lname << setw(25) << r[i].dd << "/" << r[i].mm << "/" << r[i].yyyy << endl;
-		log_isb << r[i].seat << setw(25) << r[i].fname << " " << r[i].lname << setw(25) << r[i].dd << "/" << r[i].mm << "/" << r[i].yyyy << endl;
-		isb.close();
-		log_isb.close();
+		skr << r[i].seat << setw(25) << r[i].fname << " " << r[i].lname << setw(25) << r[i].dd << "/" << r[i].mm << "/" << r[i].yyyy << endl;
+		log_skr << r[i].seat << setw(25) << r[i].fname << " " << r[i].lname << setw(25) << r[i].dd << "/" << r[i].mm << "/" << r[i].yyyy << endl;
+		skr.close();
+		log_skr.close();
 		cout << endl;
 		cout << "Reservation # " << i << endl;
 
@@ -223,42 +255,43 @@ void lheisbres() {
 	cout << "**************************************************************************\n";
 	cout << "Thanks for the Reservation. Following Seats have been booked successfully:\n\n";
 	string dispafsales; //Displays Description of Tickets after selling them
-	isb.open("lhe-isb.dat");
+	skr.open("khi-skr.dat");
 	cout << "***********************************************************************\n";
-	cout << "Confirmed Ticket Lahore - Islamabad (LHE-ISB)\n";
+	cout << "Confirmed Ticket Karachi - Sukkur (KHI-SKR)\n";
 	cout << "Seat No." << "          " << "Passengers' Name(s)" << "               " << "Departure Date" << endl;
 	cout << "***********************************************************************\n";
-	while (getline(isb, dispafsales))
+	while (getline(skr, dispafsales))
 	{
 		cout << dispafsales << '\n';
 	}
-	isb.close();
+	skr.close();
 	int tfare; //Total Fare
 
 	tfare = i * 800;
 	cout << "***********************************************************************\n";
 	cout << "Total Fare : " << i << " x 800                               =  " << tfare << endl;
 	cout << "***********************************************************************\n";
-	cout << "Press Any key to Continue.....";
+	cout << "\n\nReserved by "<<resdby <<" at "<<currentDateTime()<<endl<<endl;
 	system("pause"); mmenu();
 
 }
 
-void lhefsdres() {
+void khihydres() {
+		
 	system("cls");
-	cout << "Welcome to the Reservation System for Lahore - Faisalabad Route\n\n";
+	cout << "Welcome to the Reservation System for Karachi - Hyderabad Route\n\n";
 
-	fstream fsd;
+	fstream hyd;
 	int i = 1;
 	cout << "How many Seats you want to reserve (Max 10 at a time)?: ";
 	cin >> i;
-	res r[10];
-	remove("lhe-fsd.dat");
-	fsd.close();
+	reslist r[10];
+	remove("khi-hyd.dat");
+	hyd.close();
 	cout << "\nEnter the following information to complete the booking:\n\n";
 	for (int b = 1; b <= i; b++) {
-		fsd.open("lhe-fsd.dat", ios::app);
-		log_fsd.open("lhe-fsd-log.dat", ios::app);
+		hyd.open("khi-hyd.dat", ios::app);
+		log_hyd.open("khi-hyd-log.dat", ios::app);
 		cout << "Please Enter Departure Date (DD MM YYYY): ";
 		cin >> r[i].dd >> r[i].mm >> r[i].yyyy;
 		if (r[i].dd > 31 || r[i].mm > 12) {
@@ -275,36 +308,40 @@ void lhefsdres() {
 		}
 		cout << "Passenger's Name: ";
 		cin >> r[i].fname >> r[i].lname;
-		fsd << r[i].seat << setw(25) << r[i].fname << " " << r[i].lname << setw(25) << r[i].dd << "/" << r[i].mm << "/" << r[i].yyyy << endl;
-		log_fsd << r[i].seat << setw(25) << r[i].fname << " " << r[i].lname << setw(25) << r[i].dd << "/" << r[i].mm << "/" << r[i].yyyy << endl;
-		fsd.close();
-		log_fsd.close();
+		insert(r[i].dd, r[i].mm, r[i].yyyy, r[i].seat);
+		hyd << r[i].seat << setw(25) << r[i].fname << " " << r[i].lname << setw(25) << r[i].dd << "/" << r[i].mm << "/" << r[i].yyyy << endl;
+		log_hyd << r[i].seat << setw(25) << r[i].fname << " " << r[i].lname << setw(25) << r[i].dd << "/" << r[i].mm << "/" << r[i].yyyy << endl;
+		hyd.close();
+		log_hyd.close();
 		cout << endl;
 		cout << "Reservation # " << i << endl;
 
 	}
+
 	//**********************************************************************************************************************
 	system("cls");
 	cout << "**************************************************************************\n";
 	cout << "Thanks for the Reservation. Following Seats have been booked successfully:\n\n";
 	string dispafsales; //Displays Description of Tickets after selling them
-	fsd.open("lhe-fsd.dat");
+
 	cout << "***********************************************************************\n";
-	cout << "Confirmed Ticket Lahore - Faisalabad (LHE-FSD)\n";
+	cout << "Confirmed Ticket Karachi - Hyderabad (KHI-HYD)\n";
 	cout << "Seat No." << "          " << "Passengers' Name(s)" << "               " << "Departure Date" << endl;
 	cout << "***********************************************************************\n";
-	while (getline(fsd, dispafsales))
-	{
-		cout << dispafsales << '\n';
+	node *disp;
+	disp = START;
+	while ((*disp).next != NULL) {
+		cout << (*disp).seat << setw(10)  << (*disp).dd << "/" << (*disp).mm << "/" << (*disp).yyyy << endl;
+		disp = (*disp).next;
 	}
-	fsd.close();
+	cout << (*disp).seat << setw(10)  << (*disp).dd << "/" << (*disp).mm << "/" << (*disp).yyyy << endl;
 	int tfare; //Total Fare
 
 	tfare = i * 400;
 	cout << "***********************************************************************\n";
 	cout << "Total Fare : " << i << " x 400                               =  " << tfare << endl;
 	cout << "***********************************************************************\n";
-	cout << "Press Any key to Continue.....";
+	cout << "\n\nReserved by " << resdby << " at " << currentDateTime() << endl << endl;
 	system("pause"); mmenu();
 
 }
@@ -438,19 +475,19 @@ void lhemurres() {
 
 }
 
-void lheisbrec() {
+void khiskrrec() {
 system("cls");
 cout << "***********************************************************************\n";
-cout << "Confirmed Ticket Lahore - Islamabad (LHE-ISB)\n";
+cout << "Confirmed Ticket Karachi - Sukkur (KHI-SKR)\n";
 cout << "Bookings Information\n";
 cout << "Seat No." << "          " << "Passengers' Name(s)" << "               " << "Departure Date" << endl;
 cout << "***********************************************************************\n";
-string recordisb;
+string recordskr;
 ifstream recordfile;
-recordfile.open("lhe-isb-log.dat");
-while (getline(recordfile, recordisb)) 
+recordfile.open("khi-skr-log.dat");
+while (getline(recordfile, recordskr)) 
 {
-cout << recordisb << '\n';
+cout << recordskr << '\n';
 }
 recordfile.close();
 cout << "Press Any key to Continue.....";
@@ -458,19 +495,19 @@ system("pause"); mmenu();
 
 }
 
-void lhefsdrec() {
+void lhehydrec() {
 system("cls");
 cout << "***********************************************************************\n";
-cout << "Confirmed Ticket Lahore - Faisalabad (LHE-FSD)\n";
+cout << "Confirmed Ticket Lahore - Faisalabad (khi-hyd)\n";
 cout << "Bookings Information\n";
 cout << "Seat No." << "          " << "Passengers' Name(s)" << "               " << "Departure Date" << endl;
 cout << "***********************************************************************\n";
-string recordfsd;
+string recordhyd;
 ifstream recordfile;
-recordfile.open("lhe-fsd-log.dat");
-while (getline(recordfile, recordfsd))
+recordfile.open("khi-hyd-log.dat");
+while (getline(recordfile, recordhyd))
 {
-cout << recordfsd << '\n';
+cout << recordhyd << '\n';
 }
 recordfile.close();
 cout << "Press Any key to Continue.....";
